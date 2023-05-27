@@ -12,6 +12,9 @@ import App from './App'
 import store from './store'
 import router from './router'
 
+import { registerLicense } from '@syncfusion/ej2-base';
+import { GridPlugin } from '@syncfusion/ej2-vue-grids';
+
 import '@/icons' // icon
 import '@/permission' // permission control
 
@@ -23,13 +26,17 @@ import '@/permission' // permission control
  * Currently MockJs will be used in the production environment,
  * please remove it before going online ! ! !
  */
+
+// Registering Syncfusion license key
+registerLicense('ORg4AjUWIQA/Gnt2VFhhQlJBfV5AQmBIYVp/TGpJfl96cVxMZVVBJAtUQF1hSn5WdkRiX3pZdXRTQGFa;Mgo+DSMBMAY9C3t2VFhhQlJBfV5AQmBIYVp/TGpJfl96cVxMZVVBJAtUQF1hSn5WdkRiX3pZdXRTQWZa;MTg4OTA1NkAzMjMxMmUzMTJlMzMzNWx3emhySG90aStBZTRJM0hhRFZ6allqVHVRU3AwanZ2ZzU5dzB2ZFlzMnM9');
+//
 if (process.env.NODE_ENV === 'production') {
   const { mockXHR } = require('../mock')
   mockXHR()
 }
 
 // set ElementUI lang to EN
-Vue.use(ElementUI, { locale })
+Vue.use(ElementUI, { locale }, GridPlugin)
 // 如果想要中文版 element-ui，按如下方式声明
 // Vue.use(ElementUI)
 

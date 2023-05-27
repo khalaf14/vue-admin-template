@@ -49,43 +49,62 @@ export const constantRoutes = [
     redirect: '/dashboard',
     children: [{
       path: 'dashboard',
-      name: 'Dashboard',
+      name: 'Home',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
+      meta: { title: 'الصفحة الرئيسية', icon: 'dashboard' }
     }]
   },
-
   {
-    path: '/example',
+    path: '/sales',
     component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
-    meta: { title: 'Example', icon: 'el-icon-s-help' },
+    redirect: '/sales/pump-meters-readings',
+    name: 'Sales',
+    meta: { title: 'المبيعات', icon: 'el-icon-s-help' },
     children: [
       {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
+        path: 'pump-meters-readings',
+        name: 'Pump Meters Readings',
+        component: () => import('@/views/sales/pump-meters-readings/index'),
+        meta: { title: 'عدادات المضخات', icon: 'table' }
       },
       {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
+        path: 'payment-methods',
+        name: 'Payment Methods',
+        component: () => import('@/views/sales/payment-methodes/index.vue'), // Parent router-view
+        meta: { title: 'طرق دفع', icon: 'tree' },
+        children: [
+          {
+            path: 'jocard',
+            component: () => import('@/views/sales/payment-methodes/jocard/index.vue'),
+            name: 'jocard',
+            meta: { title: 'جوكارد' }
+          },
+          {
+            path: 'visa',
+            component: () => import('@/views/sales/payment-methodes/visa/index.vue'),
+            name: 'Visa',
+            meta: { title: 'بطاقات ائتمان' }
+          },
+          {
+            path: 'voucher',
+            component: () => import('@/views/sales/payment-methodes/voucher/index.vue'),
+            name: 'voucher',
+            meta: { title: 'Voucher' }
+          }
+        ]
       }
     ]
   },
 
   {
-    path: '/form',
+    path: '/inventory',
     component: Layout,
     children: [
       {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
+        path: 'reading-list',
+        name: 'Readings List',
+        component: () => import('@/views/inventory/index'),
+        meta: { title: 'مخزون الابار', icon: 'form' }
       }
     ]
   },
@@ -131,12 +150,6 @@ export const constantRoutes = [
                 meta: { title: 'Menu1-2-2' }
               }
             ]
-          },
-          {
-            path: 'menu1-3',
-            component: () => import('@/views/nested/menu1/menu1-3'),
-            name: 'Menu1-3',
-            meta: { title: 'Menu1-3' }
           }
         ]
       },
