@@ -46,9 +46,9 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard',
+    redirect: '/home',
     children: [{
-      path: 'dashboard',
+      path: 'home',
       name: 'Home',
       component: () => import('@/views/dashboard/index'),
       meta: { title: 'الصفحة الرئيسية', icon: 'dashboard' }
@@ -66,6 +66,13 @@ export const constantRoutes = [
         name: 'Pump Meters Readings',
         component: () => import('@/views/sales/pump-meters-readings/index'),
         meta: { title: 'عدادات المضخات', icon: 'table' }
+      },
+      {
+        hidden: true,
+        path: 'pump-meters-readings/add',
+        name: 'Pump Meters Readings',
+        component: () => import('@/views/sales/pump-meters-readings/add-form.vue'),
+        meta: { title: 'اضافة قراءة نهاية', icon: 'table' },
       },
       {
         path: 'payment-methods',

@@ -2,14 +2,17 @@
   <div>
     <!-- help: https://ej2.syncfusion.com/angular/documentation/grid/filtering/ -->
     <vue-element-loading :active="loading" spinner="spinner" />
-    <ejs-grid ref="grid" :dataSource='dataSource' :toolbarClick='toolbarClick'
+    <ejs-grid ref="grid" :dataSource='dataSource'
+              :toolbarClick='toolbarClick' :editSettings='editSettings'
               :enableHover=true clipMode="EllipsisWithTooltip"
+              :heckboxOnly="CheckBoxSelection" @rowSelected="handleRowSelection" @rowDeselected="handleRowDeselection"
               :toolbar="toolbarOptions" :allowExcelExport="true"
-              :allowResizing='true' :allowReordering="true" allowPaging="true" :pageSettings='pageSettings'
-              :filterSettings='filterOptions' :allowFiltering='true'
+              :allowResizing='true' :allowReordering="true" :allowPaging="true" :pageSettings='pageSettings'
+              :filterSettings='filterOptions' :allowFiltering='allowFiltering'
               >
       <e-columns>
-        <e-column v-for="colItem in columns" filterOperator="contains" :field='colItem.field' :headerText='colItem.headerText' width="140px" :autoFit="true" :visible='true'></e-column>
+        <e-column type='checkbox' width='50' v-if="CheckBoxSelection"></e-column>
+        <e-column v-for="colItem in columns" :allowFiltering='colItem.allowFiltering' :allowEditing='!colItem.disabled' filterOperator="contains" :field='colItem.field' :headerText='colItem.headerText' width="140px" :autoFit="true" :visible='true'></e-column>
       </e-columns>
     </ejs-grid>
   </div>
@@ -61,7 +64,7 @@ import VueElementLoading from "vue-element-loading";
 import { MultiSelectPlugin } from "@syncfusion/ej2-vue-dropdowns";
 import { MultiSelect, CheckBoxSelection } from "@syncfusion/ej2-dropdowns";
 import { CheckBoxPlugin, ButtonPlugin } from "@syncfusion/ej2-vue-buttons";
-import { GridPlugin, GridComponent, ColumnsDirective, ColumnDirective, Page, Sort, Filter, Reorder, Resize, Toolbar, ExcelExport } from '@syncfusion/ej2-vue-grids';
+import { GridPlugin, GridComponent, ColumnsDirective, ColumnDirective, Page, Sort, Filter, Reorder, Resize, Toolbar, ExcelExport, Edit } from '@syncfusion/ej2-vue-grids';
 Vue.use(MultiSelectPlugin, CheckBoxPlugin, ButtonPlugin);
 Vue.use(GridPlugin);
 MultiSelect.Inject(CheckBoxSelection);
@@ -85,7 +88,19 @@ export default {
       type: Array,
       default: () => []
     },
+    editSettings: {
+      type: Object,
+      default: () => {}
+    },
     loading:{
+      type: Boolean,
+      default: false
+    },
+    allowFiltering:{
+      type: Boolean,
+      default: false
+    },
+    CheckBoxSelection:{
       type: Boolean,
       default: false
     }
@@ -111,6 +126,16 @@ export default {
     };
   },
   methods:{
+    //emits
+    handleRowSelection() {
+      const selectedRows = this.$refs.grid.getSelectedRecords();
+      this.$emit('row-selection-change', selectedRows);
+    },
+    handleRowDeselection() {
+      const selectedRows = this.$refs.grid.getSelectedRecords();
+      this.$emit('row-selection-change', selectedRows);
+    },
+    //emits
     setLoading(){
       console.log("setLoading");
       this.$refs.gridRef.showSpinner();
@@ -131,9 +156,14 @@ export default {
                 break;
         }
   },
+  mounted() {
+    //this.$refs.grid.filterSettings.showFilterBarOperator = true;
+    console.log("child Mounted")
+    console.log(props.CheckBoxSelection)
+  },
 },
   provide: {
-    grid: [Sort, Page, Filter, Reorder, Resize, Toolbar, ExcelExport]
+    grid: [Sort, Page, Filter, Reorder, Resize, Toolbar, ExcelExport, Edit]
   }
 }
 </script>

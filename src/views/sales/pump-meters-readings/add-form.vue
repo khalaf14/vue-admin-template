@@ -1,42 +1,29 @@
 <template>
-  <div style="padding: 2px;">
-    <el-card :body-style="{ padding: '8px' }">
-      <el-row>
-        <el-col :span="2">
-          <router-link to="/sales/pump-meters-readings/add">
-          <el-button type="success" size="small" icon="el-icon-plus">إضافة</el-button>
-        </router-link>
-        </el-col>
-        <el-col :span="2">
-          <el-button :disabled="!RowSelected.length" type="danger" size="small" icon="el-icon-delete">حذف</el-button>
-        </el-col>
-      </el-row>
-    </el-card>
-    <el-card :body-style="{ padding: '12px' }">
-      <el-form :inline="true" label-position="right" :model="formquery" style="height: 5%;">
-        <el-form-item label="المحطة" style="margin-right: 20px !important;">
-          <el-select v-model="formquery.selectedStation" size="small" clearable filterable placeholder="Select">
-            <el-option v-for="item in stationsList" :key="item.Id" :label="item.DSC" :value="item.Id">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="التاريخ">
-          <el-date-picker v-model="formquery.selectedDateRange" type="daterange" value-format="yyyy-MM-dd" size="small"
-            range-separator="~" start-placeholder="من تاريخ" end-placeholder="الى تاريخ">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" icon="el-icon-search" size="small" @click="onSubmit">استعلام</el-button>
-          <!-- <el-button type="danger" icon="el-icon-circle-close" circle ></el-button> -->
-        </el-form-item>
-      </el-form>
-      <data-grid-component :loading="isLoading"
-                           :columns="gridColumns"
-                           :dataSource="gridData"
-                           :CheckBoxSelection="true"
-                           @row-selection-change="handleRowSelectionChange"
-      ></data-grid-component>
-    </el-card>
+  <div style="padding: 10px;">
+<el-form :inline="true" label-position="right" :model="formquery" style="height: 5%;">
+      <el-form-item label="المحطة" style="margin-right: 20px !important;">
+        <el-select v-model="formquery.selectedStation" :disabled="true" size="small">
+          <el-option :key="selectedStation.Id" :label="selectedStation.DSC" :value="selectedStation.Id">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="التاريخ">
+        <el-date-picker v-model="formquery.selectedDate" type="date"
+                        value-format="yyyy-MM-dd" size="small"  placeholder="التاريخ">
+        </el-date-picker>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" size="small" icon="el-icon-search" @click="onSubmit">Query</el-button>
+        <!-- <el-button type="danger" icon="el-icon-circle-close" circle ></el-button> -->
+      </el-form-item>
+    </el-form>
+    <data-grid-component :allowFiltering="false"
+                         :loading="isLoading"
+                         :editSettings='editSettings'
+                         :columns="gridColumns"
+                         :dataSource="gridData"
+                         :CheckBoxSelection="false">
+    </data-grid-component>
   </div>
 </template>
 <style scoped>
@@ -85,41 +72,35 @@ import DataGridComponent from '@/components/DataGridComponent';
 
 export default {
   components: {
-    DataGridComponent,
+    DataGridComponent
 },
   data() {
     return {
       formquery: {
+
       },
-      canDelete:'',
-      RowSelected:[],
       gridData: [],// Populate the data for the grid
       gridColumns: [
-        { field: 'jdeIntegrationId', headerText: 'رقم المحطة' },
-        { field: 'stationDscar', headerText: 'اسم المحطة' },
-        { field: 'itemNo', headerText: 'رقم المادة' },
-        { field: 'pumpNo', headerText: 'رقم المضخة' },
-        { field: 'transDate', headerText: 'تاريخ الحركة' },
-        { field: 'startReading', headerText: 'عداد بداية' },
-        { field: 'endReading', headerText: 'عداد نهاية' },
-        { field: 'shiftNo', headerText: 'رقم الشفت' },
-        { field: 'callibrReturnLt', headerText: 'مرتجع/معايرة(لتر)' },
-        { field: 'callibrReturnAmount', headerText: 'مرتجع/معايرة(دينار)' },
-        { field: 'totalSalesLt', headerText: 'إجمالي المبيعات (لتر)' },
-        { field: 'unitPrice', headerText: 'سعر الوحدة' },
-        { field: 'totalAmount', headerText: 'المبلغ الإجمالي' },
-        { field: 'originator', headerText: 'المنشئ' },
-        { field: 'status', headerText: 'الحالة' },
-        { field: 'dateCreated', headerText: 'تاريخ الإنشاء' },
-        { field: 'dateUpdated', headerText: 'تاريخ التحديث' },
-        { field: 'remark', headerText: 'ملاحظة' },
-        { field: 'stationDscen', headerText: 'اسم المحطة/انجليزي' }],
+        { field: 'itemNo', headerText: 'رقم المادة', disabled:true, allowFiltering:true},
+        { field: 'pumpNo', headerText: 'رقم المضخة', disabled:true, allowFiltering:false },
+        { field: 'startReading', headerText: 'عداد بداية', disabled:true, allowFiltering:false },
+        { field: 'endReading', headerText: 'عداد نهاية', disabled:false, allowFiltering:false },
+        { field: 'callibrReturnLt', headerText: 'مرتجع/معايرة(لتر)', disabled:false , allowFiltering:false},
+        { field: 'callibrReturnAmount', headerText: 'مرتجع/معايرة(دينار)', disabled:true, allowFiltering:false },
+        { field: 'totalSalesLt', headerText: 'إجمالي المبيعات (لتر)', disabled:true, allowFiltering:false },
+        { field: 'unitPrice', headerText: 'سعر الوحدة', disabled:true , allowFiltering:false},
+        { field: 'totalAmount', headerText: 'المبلغ الإجمالي', disabled:true, allowFiltering:false },
+        { field: 'remark', headerText: 'ملاحظة', disabled:false, allowFiltering:false },],
       stationsList: [
         { Id: 20101, DSC: "ام الحيران" },
         { Id: 20102, DSC: "المصدار" },
         { Id: 20103, DSC: "الهاشمية" },
       ],
-      isLoading: false
+      selectedStation:'',
+      editSettings:{
+        allowEditing: true, mode: 'Batch'
+      },
+      isLoading: false,
     };
   },
   methods: {
@@ -760,15 +741,12 @@ export default {
           "expr3": null
         }
       ];
-    },
-    handleRowSelectionChange(RowSelected) {
-      this.RowSelected = RowSelected;
-      console.log('selected Records', RowSelected)
-    },
+    }
   },
   mounted() {
     //this.$refs.grid.filterSettings.showFilterBarOperator = true;
     console.log("Mounted")
+    console.log(this.CheckBoxSelection)
   },
 }
 </script>

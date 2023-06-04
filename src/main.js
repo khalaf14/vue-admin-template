@@ -30,6 +30,7 @@ import '@/permission' // permission control
 // Registering Syncfusion license key
 registerLicense('ORg4AjUWIQA/Gnt2VFhhQlJBfV5AQmBIYVp/TGpJfl96cVxMZVVBJAtUQF1hSn5WdkRiX3pZdXRTQGFa;Mgo+DSMBMAY9C3t2VFhhQlJBfV5AQmBIYVp/TGpJfl96cVxMZVVBJAtUQF1hSn5WdkRiX3pZdXRTQWZa;MTg4OTA1NkAzMjMxMmUzMTJlMzMzNWx3emhySG90aStBZTRJM0hhRFZ6allqVHVRU3AwanZ2ZzU5dzB2ZFlzMnM9');
 //
+//
 if (process.env.NODE_ENV === 'production') {
   const { mockXHR } = require('../mock')
   mockXHR()
