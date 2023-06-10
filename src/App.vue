@@ -10,11 +10,16 @@ export default {
 }
 </script>
 <style>
-  @import "../node_modules/@syncfusion/ej2-vue-grids/styles/fluent.css";
-  @import "../node_modules/@syncfusion/ej2-base/styles/fluent.css";
-  @import "../node_modules/@syncfusion/ej2-inputs/styles/fluent.css";
-  @import '../node_modules/@syncfusion/ej2-buttons/styles/fluent.css';
-  @import "../node_modules/@syncfusion/ej2-splitbuttons/styles/fluent.css";
-  @import "../node_modules/@syncfusion/ej2-navigations/styles/fluent.css";
-  @import "../node_modules/@syncfusion/ej2-vue-dropdowns/styles/fluent.css";
+@import "../node_modules/@syncfusion/ej2-vue-grids/styles/fabric.css";
+@import "../node_modules/@syncfusion/ej2-base/styles/fabric.css";
+@import "../node_modules/@syncfusion/ej2-inputs/styles/fabric.css";
+@import '../node_modules/@syncfusion/ej2-buttons/styles/fabric.css';
+@import "../node_modules/@syncfusion/ej2-splitbuttons/styles/fabric.css";
+@import "../node_modules/@syncfusion/ej2-navigations/styles/fabric.css";
+@import "../node_modules/@syncfusion/ej2-vue-dropdowns/styles/fabric.css";
+@import "../node_modules/@syncfusion/ej2-vue-popups/styles/fabric.css";
+
+input.e-input {
+  height: 24px !important;
+}
 </style>

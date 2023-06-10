@@ -17,6 +17,7 @@
     "@syncfusion/ej2-vue-dropdowns": "^21.2.5",
     "@syncfusion/ej2-vue-grids": "^21.2.5",
     "@syncfusion/ej2-vue-navigations": "^21.2.6",
+    "@syncfusion/ej2-vue-popups": "^21.2.4",
     "axios": "0.18.1",
     "core-js": "3.6.5",
     "element-ui": "2.13.2",

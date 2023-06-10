@@ -1,16 +1,18 @@
 <template>
-  <div style="padding: 8px;">
-    <el-card>
+  <div style="padding: 2px;">
+    <el-card :body-style="{ padding: '8px' }">
       <el-row>
         <el-col :span="2">
+          <router-link to="/sales/pump-meters-readings/add">
           <el-button type="success" size="small" icon="el-icon-plus">إضافة</el-button>
+        </router-link>
         </el-col>
         <el-col :span="2">
-          <el-button type="danger" size="small" icon="el-icon-delete">حذف</el-button>
+          <el-button :disabled="!RowSelected.length" type="danger" size="small" icon="el-icon-delete">حذف</el-button>
         </el-col>
       </el-row>
     </el-card>
-    <el-card>
+    <el-card :body-style="{ padding: '12px' }">
       <el-form :inline="true" label-position="right" :model="formquery" style="height: 5%;">
         <el-form-item label="المحطة" style="margin-right: 20px !important;">
           <el-select v-model="formquery.selectedStation" size="small" clearable filterable placeholder="Select">
@@ -28,7 +30,12 @@
           <!-- <el-button type="danger" icon="el-icon-circle-close" circle ></el-button> -->
         </el-form-item>
       </el-form>
-      <data-grid-component :loading="isLoading" :columns="gridColumns" :dataSource="gridData"></data-grid-component>
+      <data-grid-component :loading="isLoading"
+                           :columns="gridColumns"
+                           :dataSource="gridData"
+                           :CheckBoxSelection="true"
+                           @row-selection-change="handleRowSelectionChange"
+      ></data-grid-component>
     </el-card>
   </div>
 </template>
@@ -79,12 +86,13 @@ import DataGridComponent from '@/components/DataGridComponent';
 export default {
   components: {
     DataGridComponent,
-  },
+},
   data() {
     return {
       formquery: {
-
       },
+      canDelete:'',
+      RowSelected:[],
       gridData: [],// Populate the data for the grid
       gridColumns: [
         { field: 'jdeIntegrationId', headerText: 'رقم المحطة' },
@@ -752,7 +760,11 @@ export default {
           "expr3": null
         }
       ];
-    }
+    },
+    handleRowSelectionChange(RowSelected) {
+      this.RowSelected = RowSelected;
+      console.log('selected Records', RowSelected)
+    },
   },
   mounted() {
     //this.$refs.grid.filterSettings.showFilterBarOperator = true;

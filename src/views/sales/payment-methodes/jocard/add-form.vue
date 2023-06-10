@@ -6,7 +6,7 @@
           <el-button type="success" size="small" icon="el-icon-check" @click="onSubmit">حفظ</el-button>
         </el-col>
         <el-col span="2">
-          <router-link to="/sales/pump-meters-readings">
+          <router-link to="/sales/payment-methodes/jocard">
             <el-button type="danger" size="small" icon="el-icon-close">الغاء</el-button>
           </router-link>
         </el-col>

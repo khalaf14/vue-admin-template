@@ -87,9 +87,9 @@ export const constantRoutes = [
             meta: { title: 'جوكارد' }
           },
           {
-            path: 'visa',
-            component: () => import('@/views/sales/payment-methodes/visa/index.vue'),
-            name: 'Visa',
+            path: 'credit-cards',
+            component: () => import('@/views/sales/payment-methodes/credit-cards/index.vue'),
+            name: 'Credit Cards',
             meta: { title: 'بطاقات ائتمان' }
           },
           {
@@ -115,68 +115,137 @@ export const constantRoutes = [
       }
     ]
   },
-
   {
-    path: '/nested',
+    path: '/setup',
     component: Layout,
-    redirect: '/nested/menu1',
-    name: 'Nested',
-    meta: {
-      title: 'Nested',
-      icon: 'nested'
-    },
+    redirect: '/setup/station-pump-tanks',
+    name: 'Setup',
+    meta: { title: 'اعداد النظام', icon: 'tree' },
     children: [
       {
-        path: 'menu1',
-        component: () => import('@/views/nested/menu1/index'), // Parent router-view
-        name: 'Menu1',
-        meta: { title: 'Menu1' },
-        children: [
-          {
-            path: 'menu1-1',
-            component: () => import('@/views/nested/menu1/menu1-1'),
-            name: 'Menu1-1',
-            meta: { title: 'Menu1-1' }
-          },
-          {
-            path: 'menu1-2',
-            component: () => import('@/views/nested/menu1/menu1-2'),
-            name: 'Menu1-2',
-            meta: { title: 'Menu1-2' },
-            children: [
-              {
-                path: 'menu1-2-1',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-1'),
-                name: 'Menu1-2-1',
-                meta: { title: 'Menu1-2-1' }
-              },
-              {
-                path: 'menu1-2-2',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-2'),
-                name: 'Menu1-2-2',
-                meta: { title: 'Menu1-2-2' }
-              }
-            ]
-          }
-        ]
+        path: 'customers/add',
+        component: () => import('@/views/setup/customers/add-form.vue'),
+        name: 'Station Pumps,Tanks Setup',
+        hidden: true,
+        meta: { title: 'مضخات و ابار المحطة' }
+      },
+      // {
+      //   path: 'station-pump-tanks',
+      //   component: () => import('@/views/setup/station-pump-tanks/index.vue'),
+      //   name: 'Station Pumps,Tanks Setup',
+      //   meta: { title: 'مضخات و ابار المحطة' }
+      // },
+      // {
+      //   path: 'station-pump-tanks',
+      //   component: () => import('@/views/setup/station-pump-tanks/index.vue'),
+      //   name: 'Station Pumps',
+      //   meta: { title: 'مضخات و ابار المحطة' }
+      // },
+      // {
+      //   path: 'station-pump-tanks',
+      //   component: () => import('@/views/setup/station-pump-tanks/index.vue'),
+      //   name: 'Station Pumps,Tanks Setup',
+      //   meta: { title: 'مضخات و ابار المحطة' }
+      // },
+      // {
+      //   path: 'station-pump-tanks',
+      //   component: () => import('@/views/setup/station-pump-tanks/index.vue'),
+      //   name: 'Station Pumps,Tanks Setup',
+      //   meta: { title: 'مضخات و ابار المحطة' }
+      // },
+      // {
+      //   path: 'station-pump-tanks',
+      //   component: () => import('@/views/setup/station-pump-tanks/index.vue'),
+      //   name: 'Station Pumps,Tanks Setup',
+      //   meta: { title: 'مضخات و ابار المحطة' }
+      // },
+      {
+        path: 'station-tanks-details',
+        component: () => import('@/views/setup/station-tanks-details/index.vue'),
+        name: 'Station Pumps,Tanks Setup',
+        meta: { title: 'مضخات و ابار المحطة' }
       },
       {
-        path: 'menu2',
-        component: () => import('@/views/nested/menu2/index'),
-        name: 'Menu2',
-        meta: { title: 'menu2' }
-      }
-    ]
-  },
-
-  {
-    path: 'external-link',
-    component: Layout,
-    children: [
+        path: 'stations',
+        component: () => import('@/views/setup/stations/index.vue'),
+        name: 'stations',
+        meta: { title: 'ملف المحطات الرئيسي' }
+      },
       {
-        path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-        meta: { title: 'External Link', icon: 'link' }
-      }
+        path: 'users',
+        component: () => import('@/views/setup/users/index.vue'),
+        name: 'Users',
+        meta: { title: 'ادارة المستخدمين' }
+      },
+      {
+        path: 'customers',
+        component: () => import('@/views/setup/customers/index.vue'),
+        name: 'customers',
+        meta: { title: 'العملاء' }
+      },
+      {
+        path: 'item-price',
+        component: () => import('@/views/setup/item-price/index.vue'),
+        name: 'Credit Cards',
+        meta: { title: 'أسعار المحروقات' }
+      },
+
+
+      /******** ********/
+      // {
+      //   path: '/nested',
+      //   component: Layout,
+      //   redirect: '/nested/menu1',
+      //   name: 'Nested',
+      //   meta: {
+      //     title: 'Nested',
+      //     icon: 'nested'
+      //   },
+      //   children: [
+      //     {
+      //       path: 'menu1',
+      //       component: () => import('@/views/nested/menu1/index'), // Parent router-view
+      //       name: 'Menu1',
+      //       meta: { title: 'Menu1' },
+      //       children: [
+      //         {
+      //           path: 'menu1-1',
+      //           component: () => import('@/views/nested/menu1/menu1-1'),
+      //           name: 'Menu1-1',
+      //           meta: { title: 'Menu1-1' }
+      //         },
+      //         {
+      //           path: 'menu1-2',
+      //           component: () => import('@/views/nested/menu1/menu1-2'),
+      //           name: 'Menu1-2',
+      //           meta: { title: 'Menu1-2' },
+      //           children: [
+      //             {
+      //               path: 'menu1-2-1',
+      //               component: () => import('@/views/nested/menu1/menu1-2/menu1-2-1'),
+      //               name: 'Menu1-2-1',
+      //               meta: { title: 'Menu1-2-1' }
+      //             },
+      //             {
+      //               path: 'menu1-2-2',
+      //               component: () => import('@/views/nested/menu1/menu1-2/menu1-2-2'),
+      //               name: 'Menu1-2-2',
+      //               meta: { title: 'Menu1-2-2' }
+      //             }
+      //           ]
+      //         }
+      //       ]
+      //     },
+      //     {
+      //       path: 'menu2',
+      //       component: () => import('@/views/nested/menu2/index'),
+      //       name: 'Menu2',
+      //       meta: { title: 'menu2' }
+      //     }
+      //   ]
+      // },
+      /******** *******/
+
     ]
   },
 

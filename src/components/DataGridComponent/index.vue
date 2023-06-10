@@ -2,7 +2,7 @@
   <div>
     <!-- help: https://ej2.syncfusion.com/angular/documentation/grid/filtering/ -->
     <vue-element-loading :active="loading" spinner="spinner" />
-    <ejs-grid ref="grid" :dataSource='dataSource'
+    <ejs-grid ref="grid" :dataSource='dataSource' :height='315'
               :toolbarClick='toolbarClick' :editSettings='editSettings'
               :enableHover=true clipMode="EllipsisWithTooltip"
               :heckboxOnly="CheckBoxSelection" @rowSelected="handleRowSelection" @rowDeselected="handleRowDeselection"
@@ -12,7 +12,7 @@
               >
       <e-columns>
         <e-column type='checkbox' width='50' v-if="CheckBoxSelection"></e-column>
-        <e-column v-for="colItem in columns" :allowFiltering='colItem.allowFiltering' :allowEditing='!colItem.disabled' filterOperator="contains" :field='colItem.field' :headerText='colItem.headerText' width="140px" :autoFit="true" :visible='true'></e-column>
+        <e-column v-for="(colItem, index) in columns" :key="colItem.itemNo+colItem.pumpNo" :isPrimaryKey="colItem.isPrimaryKey" :allowFiltering='colItem.allowFiltering' :allowEditing='!colItem.disabled' filterOperator="contains" :field='colItem.field' :headerText='colItem.headerText' width="140px" :autoFit="true" :visible='true'></e-column>
       </e-columns>
     </ejs-grid>
   </div>

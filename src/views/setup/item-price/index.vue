@@ -1,54 +1,42 @@
 <template>
-  <div style="padding: 30px;">
-    <h5>{{ selectedOption }}</h5>
-    <el-form :inline="true" label-position="top" :model="formInline" >
-      <el-form-item label="المحطة" style="margin-right: 20px !important;">
-      <el-select v-model="selectedOption" size="small" clearable filterable placeholder="Select">
-            <el-option v-for="item in sportsData" :key="item.Id" :label="item.Game" :value="item">
-            </el-option>
-      </el-select>
-    </el-form-item>
-    <el-form-item label="التاريخ">
-      <el-date-picker
-            v-model="selectedDateRange"
-            type="daterange"
-            size="small"
-            range-separator="To"
-            start-placeholder="Start date"
-            end-placeholder="End date">
-      </el-date-picker>
-    </el-form-item>
-    </el-form>
-    <div class="block">
-      <el-row :gutter="4">
-        <el-col :span="4"><label>Date</label></el-col>
-        <el-col :span="8">
-          <el-select v-model="selectedOption" size="small" clearable filterable placeholder="Select">
-            <el-option v-for="item in sportsData" :key="item.Id" :label="item.Game" :value="item">
+  <div style="padding: 2px;">
+    <el-card :body-style="{ padding: '8px' }">
+      <el-row>
+        <el-col :span="2">
+          <router-link to="/setup/customers/add">
+          <el-button type="success" size="small" icon="el-icon-plus">إضافة</el-button>
+        </router-link>
+        </el-col>
+        <el-col :span="2">
+          <el-button :disabled="!RowSelected.length" type="danger" size="small" icon="el-icon-delete">حذف</el-button>
+        </el-col>
+      </el-row>
+    </el-card>
+    <el-card :body-style="{ padding: '12px' }">
+      <el-form :inline="true" label-position="right" :model="formquery" style="height: 5%;">
+        <el-form-item label="المحطة" style="margin-right: 20px !important;">
+          <el-select v-model="formquery.selectedStation" size="small" clearable filterable placeholder="Select">
+            <el-option v-for="item in stationsList" :key="item.Id" :label="item.DSC" :value="item.Id">
             </el-option>
           </el-select>
-        </el-col>
-        <el-col :span="12">
-          <el-date-picker
-            v-model="selectedDateRange"
-            type="daterange"
-            size="small"
-            range-separator="To"
-            start-placeholder="Start date"
-            end-placeholder="End date">
+        </el-form-item>
+        <el-form-item label="التاريخ">
+          <el-date-picker v-model="formquery.selectedDateRange" type="daterange" value-format="yyyy-MM-dd" size="small"
+            range-separator="~" start-placeholder="من تاريخ" end-placeholder="الى تاريخ">
           </el-date-picker>
-        </el-col>
-        <el-col></el-col>
-      </el-row>
-    </div>
-    <!-- help: https://ej2.syncfusion.com/angular/documentation/grid/filtering/ -->
-    <ejs-grid ref='grid' :dataSource='data' :filterSettings='filterOptions' :allowFiltering='true' height='267px'>
-      <e-columns>
-        <e-column field='OrderID' headerText='Order ID' textAlign='Right' width=60></e-column>
-        <e-column field='CustomerID' headerText='Customer ID' width=60></e-column>
-        <e-column field='Freight' headerText='Freight' textAlign='Right' format='C2' width=60></e-column>
-      </e-columns>
-    </ejs-grid>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" icon="el-icon-search" size="small" @click="onSubmit">استعلام</el-button>
+          <!-- <el-button type="danger" icon="el-icon-circle-close" circle ></el-button> -->
+        </el-form-item>
+      </el-form>
+      <data-grid-component :loading="isLoading"
+                           :columns="gridColumns"
+                           :dataSource="gridData"
+                           :CheckBoxSelection="true"
+                           @row-selection-change="handleRowSelectionChange"
+      ></data-grid-component>
+    </el-card>
   </div>
 </template>
 <style scoped>
@@ -93,58 +81,694 @@
 /* @import "../../styles/Grid/filtering.css"; */
 </style>
 <script>
-import Vue from 'vue';
-
-import { MultiSelectPlugin } from "@syncfusion/ej2-vue-dropdowns";
-import { MultiSelect, CheckBoxSelection, DropDownListPlugin, DropDownListComponent } from "@syncfusion/ej2-dropdowns";
-import { GridComponent, ColumnsDirective, ColumnDirective, Page, Sort, Filter } from '@syncfusion/ej2-vue-grids';
-MultiSelect.Inject(CheckBoxSelection);
-
-Vue.use(MultiSelectPlugin);
+import DataGridComponent from '@/components/DataGridComponent';
 
 export default {
   components: {
-    'ejs-grid': GridComponent,
-    'e-columns': ColumnsDirective,
-    'e-column': ColumnDirective,
-  },
+    DataGridComponent,
+},
   data() {
     return {
-      data: [
-        { OrderID: 10248, CustomerID: 'VINET', Freight: 32.38 },
-        { OrderID: 10249, CustomerID: 'TOMSP', Freight: 11.61 },
-        { OrderID: 10250, CustomerID: 'HANAR', Freight: 65.83 },
-        { OrderID: 10251, CustomerID: 'VICTE', Freight: 41.34 },
-        { OrderID: 10252, CustomerID: 'SUPRD', Freight: 51.3 },
-        { OrderID: 10253, CustomerID: 'HANAR', Freight: 58.17 },
-        { OrderID: 10254, CustomerID: 'CHOPS', Freight: 22.98 },
-        { OrderID: 10255, CustomerID: 'RICSU', Freight: 148.33 },
-        { OrderID: 10256, CustomerID: 'WELLI', Freight: 13.97 }
-      ],
-      selectedDateRange:'',
-      selectedOption: '',
-      sportsData: [
-        { Id: 'game1', Game: 'Badminton' },
-        { Id: 'game2', Game: 'Football' },
-        { Id: 'game3', Game: 'Tennis' }
-      ],
-      fields: { text: 'Game', value: 'Id' },
-      pageSettings: { pageSize: 5 },
-      filterOptions: {
-        showFilterBarOperator: true
+      formquery: {
       },
-      filter: {
-        type: 'CheckBox'
-      }
+      canDelete:'',
+      RowSelected:[],
+      gridData: [],// Populate the data for the grid
+      gridColumns: [
+        { field: 'jdeIntegrationId', headerText: 'رقم المحطة' },
+        { field: 'stationDscar', headerText: 'اسم المحطة' },
+        { field: 'itemNo', headerText: 'رقم المادة' },
+        { field: 'pumpNo', headerText: 'رقم المضخة' },
+        { field: 'transDate', headerText: 'تاريخ الحركة' },
+        { field: 'startReading', headerText: 'عداد بداية' },
+        { field: 'endReading', headerText: 'عداد نهاية' },
+        { field: 'shiftNo', headerText: 'رقم الشفت' },
+        { field: 'callibrReturnLt', headerText: 'مرتجع/معايرة(لتر)' },
+        { field: 'callibrReturnAmount', headerText: 'مرتجع/معايرة(دينار)' },
+        { field: 'totalSalesLt', headerText: 'إجمالي المبيعات (لتر)' },
+        { field: 'unitPrice', headerText: 'سعر الوحدة' },
+        { field: 'totalAmount', headerText: 'المبلغ الإجمالي' },
+        { field: 'originator', headerText: 'المنشئ' },
+        { field: 'status', headerText: 'الحالة' },
+        { field: 'dateCreated', headerText: 'تاريخ الإنشاء' },
+        { field: 'dateUpdated', headerText: 'تاريخ التحديث' },
+        { field: 'remark', headerText: 'ملاحظة' },
+        { field: 'stationDscen', headerText: 'اسم المحطة/انجليزي' }],
+      stationsList: [
+        { Id: 20101, DSC: "ام الحيران" },
+        { Id: 20102, DSC: "المصدار" },
+        { Id: 20103, DSC: "الهاشمية" },
+      ],
+      isLoading: false
     };
+  },
+  methods: {
+    onSubmit() {
+      console.log(this.formquery);
+      this.isLoading = true;
+      console.log(this.isLoading);
+      setTimeout(async () => {
+        this.isLoading = false;
+        console.log(this.isLoading);
+        // debugger
+        await this.fetchData();
+        console.log(this.gridData)
+        console.log(this.tableData)
+        console.log(tableData)
+      }, 2000);
+    },
+    async fetchData() {
+      this.gridData = [
+        {
+          "pumpNo": "P01",
+          "transDate": "2023-03-04T00:00:00",
+          "stationId": 20102,
+          "itemNo": "10117",
+          "shiftNo": 1,
+          "startReading": 3,
+          "callibrReturnLt": 0,
+          "callibrReturnAmount": 0,
+          "totalSalesLt": 5,
+          "unitPrice": 0.6,
+          "totalAmount": 3,
+          "originator": null,
+          "status": 1,
+          "remark": null,
+          "cat1": null,
+          "cat2": null,
+          "dateCreated": "2023-03-04T23:46:34.15",
+          "dateUpdated": null,
+          "userCreated": "80016762",
+          "userUpdated": null,
+          "cat3": null,
+          "endReading": 8,
+          "stationDscar": "محطة المصدار",
+          "jdeIntegrationId": 20102,
+          "stationDscen": "Al-Mesdar",
+          "stationStatus": 1,
+          "phone": null,
+          "stationCat1": "1",
+          "expr3": null
+        },
+        {
+          "pumpNo": "P01",
+          "transDate": "2023-03-05T00:00:00",
+          "stationId": 20102,
+          "itemNo": "10117",
+          "shiftNo": 1,
+          "startReading": 3,
+          "callibrReturnLt": 0,
+          "callibrReturnAmount": 0,
+          "totalSalesLt": 5,
+          "unitPrice": 0.6,
+          "totalAmount": 3,
+          "originator": null,
+          "status": 1,
+          "remark": null,
+          "cat1": null,
+          "cat2": null,
+          "dateCreated": "2023-03-04T23:46:58.397",
+          "dateUpdated": null,
+          "userCreated": "80016762",
+          "userUpdated": null,
+          "cat3": null,
+          "endReading": 8,
+          "stationDscar": "محطة المصدار",
+          "jdeIntegrationId": 20102,
+          "stationDscen": "Al-Mesdar",
+          "stationStatus": 1,
+          "phone": null,
+          "stationCat1": "1",
+          "expr3": null
+        },
+        {
+          "pumpNo": "P01",
+          "transDate": "2023-03-06T00:00:00",
+          "stationId": 20102,
+          "itemNo": "10117",
+          "shiftNo": 1,
+          "startReading": 10,
+          "callibrReturnLt": 10,
+          "callibrReturnAmount": 10,
+          "totalSalesLt": 15,
+          "unitPrice": 0.75,
+          "totalAmount": 11.25,
+          "originator": null,
+          "status": 1,
+          "remark": null,
+          "cat1": null,
+          "cat2": null,
+          "dateCreated": "2023-03-04T23:43:09.083",
+          "dateUpdated": null,
+          "userCreated": "80016762",
+          "userUpdated": null,
+          "cat3": null,
+          "endReading": 8,
+          "stationDscar": "محطة المصدار",
+          "jdeIntegrationId": 20102,
+          "stationDscen": "Al-Mesdar",
+          "stationStatus": 1,
+          "phone": null,
+          "stationCat1": "1",
+          "expr3": null
+        },
+        {
+          "pumpNo": "P01",
+          "transDate": "2023-05-02T00:00:00",
+          "stationId": 20102,
+          "itemNo": "10401",
+          "shiftNo": 1,
+          "startReading": 13000,
+          "callibrReturnLt": 0,
+          "callibrReturnAmount": 0,
+          "totalSalesLt": 600,
+          "unitPrice": 0.775,
+          "totalAmount": 465,
+          "originator": null,
+          "status": 1,
+          "remark": null,
+          "cat1": null,
+          "cat2": null,
+          "dateCreated": "2023-05-02T23:15:18.19",
+          "dateUpdated": null,
+          "userCreated": "80016762",
+          "userUpdated": null,
+          "cat3": null,
+          "endReading": 13600,
+          "stationDscar": "محطة المصدار",
+          "jdeIntegrationId": 20102,
+          "stationDscen": "Al-Mesdar",
+          "stationStatus": 1,
+          "phone": null,
+          "stationCat1": "1",
+          "expr3": null
+        },
+        {
+          "pumpNo": "P02",
+          "transDate": "2023-03-05T00:00:00",
+          "stationId": 20102,
+          "itemNo": "10117",
+          "shiftNo": 1,
+          "startReading": 3,
+          "callibrReturnLt": 0,
+          "callibrReturnAmount": 0,
+          "totalSalesLt": 5,
+          "unitPrice": 0.6,
+          "totalAmount": 3,
+          "originator": null,
+          "status": 1,
+          "remark": null,
+          "cat1": null,
+          "cat2": null,
+          "dateCreated": "2023-03-04T23:47:01.923",
+          "dateUpdated": null,
+          "userCreated": "80016762",
+          "userUpdated": null,
+          "cat3": null,
+          "endReading": 8,
+          "stationDscar": "محطة المصدار",
+          "jdeIntegrationId": 20102,
+          "stationDscen": "Al-Mesdar",
+          "stationStatus": 1,
+          "phone": null,
+          "stationCat1": "1",
+          "expr3": null
+        },
+        {
+          "pumpNo": "P02",
+          "transDate": "2023-03-06T00:00:00",
+          "stationId": 20102,
+          "itemNo": "10117",
+          "shiftNo": 1,
+          "startReading": 10,
+          "callibrReturnLt": 10,
+          "callibrReturnAmount": 10,
+          "totalSalesLt": 15,
+          "unitPrice": 0.75,
+          "totalAmount": 11.25,
+          "originator": null,
+          "status": 1,
+          "remark": null,
+          "cat1": null,
+          "cat2": null,
+          "dateCreated": "2023-03-04T23:43:02.907",
+          "dateUpdated": null,
+          "userCreated": "80016",
+          "userUpdated": null,
+          "cat3": null,
+          "endReading": 8,
+          "stationDscar": "محطة المصدار",
+          "jdeIntegrationId": 20102,
+          "stationDscen": "Al-Mesdar",
+          "stationStatus": 1,
+          "phone": null,
+          "stationCat1": "1",
+          "expr3": null
+        },
+        {
+          "pumpNo": "P02",
+          "transDate": "2023-03-04T00:00:00",
+          "stationId": 20102,
+          "itemNo": "10117",
+          "shiftNo": 2,
+          "startReading": 3,
+          "callibrReturnLt": 0,
+          "callibrReturnAmount": 0,
+          "totalSalesLt": 5,
+          "unitPrice": 0.6,
+          "totalAmount": 3,
+          "originator": null,
+          "status": 1,
+          "remark": null,
+          "cat1": null,
+          "cat2": null,
+          "dateCreated": "2023-03-04T23:46:38.307",
+          "dateUpdated": null,
+          "userCreated": "80016762",
+          "userUpdated": null,
+          "cat3": null,
+          "endReading": 8,
+          "stationDscar": "محطة المصدار",
+          "jdeIntegrationId": 20102,
+          "stationDscen": "Al-Mesdar",
+          "stationStatus": 1,
+          "phone": null,
+          "stationCat1": "1",
+          "expr3": null
+        },
+        {
+          "pumpNo": "P03",
+          "transDate": "2023-03-04T00:00:00",
+          "stationId": 20102,
+          "itemNo": "10117",
+          "shiftNo": 1,
+          "startReading": 3,
+          "callibrReturnLt": 0,
+          "callibrReturnAmount": 0,
+          "totalSalesLt": 5,
+          "unitPrice": 0.6,
+          "totalAmount": 3,
+          "originator": null,
+          "status": 1,
+          "remark": null,
+          "cat1": null,
+          "cat2": null,
+          "dateCreated": "2023-03-04T23:46:41.273",
+          "dateUpdated": null,
+          "userCreated": "80016",
+          "userUpdated": null,
+          "cat3": null,
+          "endReading": 8,
+          "stationDscar": "محطة المصدار",
+          "jdeIntegrationId": 20102,
+          "stationDscen": "Al-Mesdar",
+          "stationStatus": 1,
+          "phone": null,
+          "stationCat1": "1",
+          "expr3": null
+        },
+        {
+          "pumpNo": "P03",
+          "transDate": "2023-03-05T00:00:00",
+          "stationId": 20102,
+          "itemNo": "10117",
+          "shiftNo": 1,
+          "startReading": 3,
+          "callibrReturnLt": 0,
+          "callibrReturnAmount": 0,
+          "totalSalesLt": 5,
+          "unitPrice": 0.6,
+          "totalAmount": 3,
+          "originator": null,
+          "status": 1,
+          "remark": null,
+          "cat1": null,
+          "cat2": null,
+          "dateCreated": "2023-03-04T23:47:07.817",
+          "dateUpdated": null,
+          "userCreated": "80016",
+          "userUpdated": null,
+          "cat3": null,
+          "endReading": 8,
+          "stationDscar": "محطة المصدار",
+          "jdeIntegrationId": 20102,
+          "stationDscen": "Al-Mesdar",
+          "stationStatus": 1,
+          "phone": null,
+          "stationCat1": "1",
+          "expr3": null
+        },
+        {
+          "pumpNo": "P03",
+          "transDate": "2023-03-06T00:00:00",
+          "stationId": 20102,
+          "itemNo": "10117",
+          "shiftNo": 1,
+          "startReading": 10,
+          "callibrReturnLt": 10,
+          "callibrReturnAmount": 10,
+          "totalSalesLt": 15,
+          "unitPrice": 0.75,
+          "totalAmount": 11.25,
+          "originator": null,
+          "status": 1,
+          "remark": null,
+          "cat1": null,
+          "cat2": null,
+          "dateCreated": "2023-03-04T23:42:56.79",
+          "dateUpdated": null,
+          "userCreated": "80016",
+          "userUpdated": null,
+          "cat3": null,
+          "endReading": 8,
+          "stationDscar": "محطة المصدار",
+          "jdeIntegrationId": 20102,
+          "stationDscen": "Al-Mesdar",
+          "stationStatus": 1,
+          "phone": null,
+          "stationCat1": "1",
+          "expr3": null
+        },
+        {
+          "pumpNo": "P04",
+          "transDate": "2023-03-04T00:00:00",
+          "stationId": 20102,
+          "itemNo": "10117",
+          "shiftNo": 1,
+          "startReading": 3,
+          "callibrReturnLt": 0,
+          "callibrReturnAmount": 0,
+          "totalSalesLt": 5,
+          "unitPrice": 0.6,
+          "totalAmount": 3,
+          "originator": null,
+          "status": 1,
+          "remark": null,
+          "cat1": null,
+          "cat2": null,
+          "dateCreated": "2023-03-04T23:46:43.9",
+          "dateUpdated": null,
+          "userCreated": "80016",
+          "userUpdated": null,
+          "cat3": null,
+          "endReading": 8,
+          "stationDscar": "محطة المصدار",
+          "jdeIntegrationId": 20102,
+          "stationDscen": "Al-Mesdar",
+          "stationStatus": 1,
+          "phone": null,
+          "stationCat1": "1",
+          "expr3": null
+        },
+        {
+          "pumpNo": "P04",
+          "transDate": "2023-03-05T00:00:00",
+          "stationId": 20102,
+          "itemNo": "10117",
+          "shiftNo": 1,
+          "startReading": 3,
+          "callibrReturnLt": 0,
+          "callibrReturnAmount": 0,
+          "totalSalesLt": 5,
+          "unitPrice": 0.6,
+          "totalAmount": 3,
+          "originator": null,
+          "status": 1,
+          "remark": null,
+          "cat1": null,
+          "cat2": null,
+          "dateCreated": "2023-03-04T23:47:15.493",
+          "dateUpdated": null,
+          "userCreated": "80016",
+          "userUpdated": null,
+          "cat3": null,
+          "endReading": 8,
+          "stationDscar": "محطة المصدار",
+          "jdeIntegrationId": 20102,
+          "stationDscen": "Al-Mesdar",
+          "stationStatus": 1,
+          "phone": null,
+          "stationCat1": "1",
+          "expr3": null
+        },
+        {
+          "pumpNo": "P04",
+          "transDate": "2023-03-06T00:00:00",
+          "stationId": 20102,
+          "itemNo": "10117",
+          "shiftNo": 1,
+          "startReading": 10,
+          "callibrReturnLt": 10,
+          "callibrReturnAmount": 10,
+          "totalSalesLt": 15,
+          "unitPrice": 0.75,
+          "totalAmount": 11.25,
+          "originator": null,
+          "status": 1,
+          "remark": null,
+          "cat1": null,
+          "cat2": null,
+          "dateCreated": "2023-03-04T23:42:48.927",
+          "dateUpdated": null,
+          "userCreated": "80016",
+          "userUpdated": null,
+          "cat3": null,
+          "endReading": 8,
+          "stationDscar": "محطة المصدار",
+          "jdeIntegrationId": 20102,
+          "stationDscen": "Al-Mesdar",
+          "stationStatus": 1,
+          "phone": null,
+          "stationCat1": "1",
+          "expr3": null
+        },
+        {
+          "pumpNo": "P05",
+          "transDate": "2023-03-04T00:00:00",
+          "stationId": 20102,
+          "itemNo": "10117",
+          "shiftNo": 1,
+          "startReading": 3,
+          "callibrReturnLt": 0,
+          "callibrReturnAmount": 0,
+          "totalSalesLt": 5,
+          "unitPrice": 0.6,
+          "totalAmount": 3,
+          "originator": null,
+          "status": 1,
+          "remark": null,
+          "cat1": null,
+          "cat2": null,
+          "dateCreated": "2023-03-04T23:46:47.49",
+          "dateUpdated": null,
+          "userCreated": "80016",
+          "userUpdated": null,
+          "cat3": null,
+          "endReading": 8,
+          "stationDscar": "محطة المصدار",
+          "jdeIntegrationId": 20102,
+          "stationDscen": "Al-Mesdar",
+          "stationStatus": 1,
+          "phone": null,
+          "stationCat1": "1",
+          "expr3": null
+        },
+        {
+          "pumpNo": "P05",
+          "transDate": "2023-03-05T00:00:00",
+          "stationId": 20102,
+          "itemNo": "10117",
+          "shiftNo": 1,
+          "startReading": 3,
+          "callibrReturnLt": 0,
+          "callibrReturnAmount": 0,
+          "totalSalesLt": 5,
+          "unitPrice": 0.6,
+          "totalAmount": 3,
+          "originator": null,
+          "status": 1,
+          "remark": null,
+          "cat1": null,
+          "cat2": null,
+          "dateCreated": "2023-03-04T23:47:12.127",
+          "dateUpdated": null,
+          "userCreated": "80016",
+          "userUpdated": null,
+          "cat3": null,
+          "endReading": 8,
+          "stationDscar": "محطة المصدار",
+          "jdeIntegrationId": 20102,
+          "stationDscen": "Al-Mesdar",
+          "stationStatus": 1,
+          "phone": null,
+          "stationCat1": "1",
+          "expr3": null
+        },
+        {
+          "pumpNo": "P05",
+          "transDate": "2023-03-06T00:00:00",
+          "stationId": 20102,
+          "itemNo": "10117",
+          "shiftNo": 1,
+          "startReading": 10,
+          "callibrReturnLt": 10,
+          "callibrReturnAmount": 10,
+          "totalSalesLt": 15,
+          "unitPrice": 0.75,
+          "totalAmount": 11.25,
+          "originator": null,
+          "status": 1,
+          "remark": null,
+          "cat1": null,
+          "cat2": null,
+          "dateCreated": "2023-03-04T23:42:21.11",
+          "dateUpdated": null,
+          "userCreated": "80016",
+          "userUpdated": null,
+          "cat3": null,
+          "endReading": 8,
+          "stationDscar": "محطة المصدار",
+          "jdeIntegrationId": 20102,
+          "stationDscen": "Al-Mesdar",
+          "stationStatus": 1,
+          "phone": null,
+          "stationCat1": "1",
+          "expr3": null
+        },
+        {
+          "pumpNo": "P06",
+          "transDate": "2023-03-04T00:00:00",
+          "stationId": 20102,
+          "itemNo": "10117",
+          "shiftNo": 2,
+          "startReading": 3,
+          "callibrReturnLt": 0,
+          "callibrReturnAmount": 0,
+          "totalSalesLt": 5,
+          "unitPrice": 0.6,
+          "totalAmount": 3,
+          "originator": null,
+          "status": 1,
+          "remark": null,
+          "cat1": null,
+          "cat2": null,
+          "dateCreated": "2023-03-04T23:46:50.6",
+          "dateUpdated": null,
+          "userCreated": "80016",
+          "userUpdated": null,
+          "cat3": null,
+          "endReading": 8,
+          "stationDscar": "محطة المصدار",
+          "jdeIntegrationId": 20102,
+          "stationDscen": "Al-Mesdar",
+          "stationStatus": 1,
+          "phone": null,
+          "stationCat1": "1",
+          "expr3": null
+        },
+        {
+          "pumpNo": "P06",
+          "transDate": "2023-03-05T00:00:00",
+          "stationId": 20102,
+          "itemNo": "10117",
+          "shiftNo": 2,
+          "startReading": 3,
+          "callibrReturnLt": 0,
+          "callibrReturnAmount": 0,
+          "totalSalesLt": 5,
+          "unitPrice": 0.6,
+          "totalAmount": 3,
+          "originator": null,
+          "status": 1,
+          "remark": null,
+          "cat1": null,
+          "cat2": null,
+          "dateCreated": "2023-03-04T23:47:19.477",
+          "dateUpdated": null,
+          "userCreated": "80016",
+          "userUpdated": null,
+          "cat3": null,
+          "endReading": 8,
+          "stationDscar": "محطة المصدار",
+          "jdeIntegrationId": 20102,
+          "stationDscen": "Al-Mesdar",
+          "stationStatus": 1,
+          "phone": null,
+          "stationCat1": "1",
+          "expr3": null
+        },
+        {
+          "pumpNo": "P07",
+          "transDate": "2023-03-04T00:00:00",
+          "stationId": 20102,
+          "itemNo": "10117",
+          "shiftNo": 1,
+          "startReading": 3,
+          "callibrReturnLt": 0,
+          "callibrReturnAmount": 0,
+          "totalSalesLt": 5,
+          "unitPrice": 0.6,
+          "totalAmount": 3,
+          "originator": null,
+          "status": 1,
+          "remark": null,
+          "cat1": null,
+          "cat2": null,
+          "dateCreated": "2023-03-04T23:46:26.78",
+          "dateUpdated": null,
+          "userCreated": "80016",
+          "userUpdated": null,
+          "cat3": null,
+          "endReading": 8,
+          "stationDscar": "محطة المصدار",
+          "jdeIntegrationId": 20102,
+          "stationDscen": "Al-Mesdar",
+          "stationStatus": 1,
+          "phone": null,
+          "stationCat1": "1",
+          "expr3": null
+        },
+        {
+          "pumpNo": "P07",
+          "transDate": "2023-03-05T00:00:00",
+          "stationId": 20102,
+          "itemNo": "10117",
+          "shiftNo": 2,
+          "startReading": 10,
+          "callibrReturnLt": 10,
+          "callibrReturnAmount": 0.95,
+          "totalSalesLt": 10,
+          "unitPrice": 0.096,
+          "totalAmount": 0.96,
+          "originator": null,
+          "status": 1,
+          "remark": null,
+          "cat1": null,
+          "cat2": null,
+          "dateCreated": "2023-03-04T23:41:14.63",
+          "dateUpdated": null,
+          "userCreated": "80016",
+          "userUpdated": null,
+          "cat3": null,
+          "endReading": 8,
+          "stationDscar": "محطة المصدار",
+          "jdeIntegrationId": 20102,
+          "stationDscen": "Al-Mesdar",
+          "stationStatus": 1,
+          "phone": null,
+          "stationCat1": "1",
+          "expr3": null
+        }
+      ];
+    },
+    handleRowSelectionChange(RowSelected) {
+      this.RowSelected = RowSelected;
+      console.log('selected Records', RowSelected)
+    },
   },
   mounted() {
     //this.$refs.grid.filterSettings.showFilterBarOperator = true;
     console.log("Mounted")
-    console.log(this.$refs.grid)
   },
-  provide: {
-    grid: [Page, Sort, Filter]
-  }
 }
 </script>

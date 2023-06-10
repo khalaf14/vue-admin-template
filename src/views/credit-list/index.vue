@@ -1,5 +1,9 @@
 <template>
-  <div>Report</div>
+  <div>
+    <h3>
+      Credit List
+    </h3>
+  </div>
 </template>
 <script>
 export default {
